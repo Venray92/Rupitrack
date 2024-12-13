@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - RupiTrack</title>
+    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="style.css">
+
+
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        /* Header */
+        .header {
+            background-color: #2E8B57;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: "Arial Black", sans-serif;
+        }
+        /* Saldo Sebelumnya */
+        .saldo-sebelumnya {
+            margin: 30px 0 15px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        /* Section Container */
+        .section-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .section-title {
+            background-color: #043927;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title-blue {
+            background-color: #191970;
+        }
+        .btn-add {
+            font-size: 1.5rem;
+            color: white;
+            background-color: #043927;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .btn-add:hover {
+            background-color: #032d21;
+        }
+        .total-container {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: right;
+        }
+        .total-blue {
+            color: #191970;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="d-flex align-items-center">
+            RupiTrack
+            <img src="images/logo.png" alt="Logo" class="ms-2" style="height: 25px;">
+        </div>
+        
+        <div>
+            Welcome, <span id="user-name" style="cursor: pointer; text-decoration: underline;" 
+            onclick="openProfileModal()">Guest</span>
+            <a href="index.html" class="btn btn-outline-light btn-sm ms-3">Logout</a>
+        </div>
+        
+        
+    </header>
+
+    <div class="container">
+
+  
+
+<!-- Saldo Sebelumnya -->
+<div class="saldo-sebelumnya d-flex justify-content-end align-items-center">
+    <span class="me-2">Saldo Sebelumnya:</span>
+    <input type="text" id="saldo-sebelumnya" class="form-control w-25 text-end" placeholder="Rp. 0" oninput="formatRupiah(this)">
+</div>
+
+<!-- Aset Section -->
+<div class="section-container">
+    <div class="section-title">
+        <span>Aset</span>
+        <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addAssetModal">+</button>
+    </div>
+    <div class="mb-2 d-flex align-items-center">
+        <label for="filter-asset-date" class="form-label me-2" style="color: #FFB6C1; font-weight: bold;">Filter Tanggal:</label>
+        <input type="date" id="filter-asset-date" class="form-control w-25" oninput="filterTableByDate('asset-list', this.value)">
+    </div>
+    
+    <table class="table table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Deskripsi</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="asset-list"></tbody>
+    </table>
+    <div id="pagination-asset" class="d-flex justify-content-center mt-3"></div>
+
+    <div class="total-container" id="total-asset">Total Aset: Rp. 0</div>
+</div>
+
+
+
+<!-- Arus Kas Masuk Section -->
+<div class="section-container">
+    <div class="section-title section-title-blue">
+        <span>Arus Kas Masuk</span>
+        <button class="btn btn-add" style="background-color: #191970;" data-bs-toggle="modal" data-bs-target="#addIncomeModal">+</button>
+    </div>
+    <div class="mb-2 d-flex align-items-center">
+        <label for="filter-income-date" class="form-label me-2" style="color: #FFB6C1; font-weight: bold;">Filter Tanggal:</label>
+        <input type="date" id="filter-income-date" class="form-control w-25" oninput="filterTableByDate('income-list', this.value)">
+    </div>
+    
+    
+    <table class="table table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Deskripsi</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="income-list"></tbody>
+    </table>
+    <div id="pagination-income" class="d-flex justify-content-center mt-3"></div>
+
+    <div class="total-container total-blue" id="total-income">Total Arus Kas Masuk: Rp. 0</div>
+</div>
+
+
+<!-- Arus Kas Keluar Section -->
+<div class="section-container">
+    <div class="section-title" style="background-color: #D21F3C; color: white;">
+        <span>Arus Kas Keluar</span>
+        <button class="btn btn-add" style="background-color: #D21F3C;" data-bs-toggle="modal" data-bs-target="#addExpenseModal">+</button>
+    </div>
+    <div class="mb-2 d-flex align-items-center">
+        <label for="filter-expense-date" class="form-label me-2" style="color: #FFB6C1; font-weight: bold;">Filter Tanggal:</label>
+        <input type="date" id="filter-expense-date" class="form-control w-25" oninput="filterTableByDate('expense-list', this.value)">
+    </div>
+    
+    
+    <table class="table table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Deskripsi</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="expense-list"></tbody>
+    </table>
+    <div id="pagination-expense" class="d-flex justify-content-center mt-3"></div>
+
+    <div class="total-container total-red" id="total-expense">Total Arus Kas Keluar: Rp. 0</div>
+</div>
+
+
+<!-- Saldo Akhir Rinci -->
+<div class="saldo-akhir-container">
+    <div class="saldo-akhir card shadow">
+        <div class="card-header text-center fw-bold" style="background-color: #28a745; color: white;">
+            Rincian Saldo Akhir
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered mb-0">
+                <tr>
+                    <th>Saldo Sebelumnya</th>
+                    <td id="rincian-saldo-sebelumnya">Rp. 0</td>
+                </tr>
+                <tr>
+                    <th>Total Aset</th>
+                    <td id="rincian-total-aset">Rp. 0</td>
+                </tr>
+                <tr>
+                    <th>Total Arus Kas Masuk</th>
+                    <td id="rincian-total-income">Rp. 0</td>
+                </tr>
+                <tr>
+                    <th>Total Arus Kas Keluar</th>
+                    <td id="rincian-total-expense">Rp. 0</td>
+                </tr>
+                <tr class="table-success">
+                    <th>Saldo Akhir</th>
+                    <td id="rincian-saldo-akhir">Rp. 0</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Tombol Reset Data -->
+<div class="reset-data">
+    <button class="btn btn-danger" onclick="resetData()">Reset Data</button>
+</div>
+
+
+
+    </div>
+
+<!-- Modal Tambah Aset -->
+<div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAssetModalLabel">Tambah Aset</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="asset-name" class="form-control mb-2" placeholder="Nama Aset" list="asset-name-list">
+                <datalist id="asset-name-list"></datalist>
+                <input type="text" id="asset-value" class="form-control mb-2" placeholder="Nominal Aset (Rp)" oninput="formatRupiah(this)">
+                <input type="text" id="asset-description" class="form-control mb-2" placeholder="Deskripsi Aset">
+                <input type="date" id="asset-date" class="form-control mb-2">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="addItem('asset-name', 'asset-value', 'asset-list', usedAssets, 'total-asset', 'totalAset', 'asset-date', 'asset-description', false)">Tambah</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Tambah Arus Kas Masuk -->
+<div class="modal fade" id="addIncomeModal" tabindex="-1" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addIncomeModalLabel">Tambah Arus Kas Masuk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="income-name" class="form-control mb-2" placeholder="Nama Pendapatan" list="income-name-list">
+                <datalist id="income-name-list"></datalist>
+                <input type="text" id="income-value" class="form-control mb-2" placeholder="Nominal Pendapatan (Rp)" oninput="formatRupiah(this)">
+                <input type="text" id="income-description" class="form-control mb-2" placeholder="Deskripsi Pendapatan">
+                <input type="date" id="income-date" class="form-control mb-2">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" 
+onclick="addItem('income-name', 'income-value', 'income-list', usedIncomes, 'total-income', 'totalIncome', 'income-date', 'income-description')">Tambah</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Arus Kas Keluar -->
+<div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addExpenseModalLabel">Tambah Arus Kas Keluar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="expense-name" class="form-control mb-2" placeholder="Nama Pengeluaran" list="expense-name-list">
+                <datalist id="expense-name-list"></datalist>
+                <input type="text" id="expense-value" class="form-control mb-2" placeholder="Nominal Pengeluaran (Rp)" oninput="formatRupiah(this)">
+                <input type="text" id="expense-description" class="form-control mb-2" placeholder="Deskripsi Pengeluaran">
+                <input type="date" id="expense-date" class="form-control mb-2">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" 
+onclick="addItem('expense-name', 'expense-value', 'expense-list', usedExpenses, 'total-expense', 'totalExpense', 'expense-date', 'expense-description')">Tambah</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="edit-name" class="form-control mb-2" placeholder="Nama">
+                <input type="text" id="edit-description" class="form-control mb-2" placeholder="Deskripsi">
+                <input type="text" id="edit-value" class="form-control mb-2" placeholder="Nominal (Rp)" oninput="formatRupiah(this)">
+                <input type="date" id="edit-date" class="form-control mb-2">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-edit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ganti Profile User -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profileModalLabel">Ganti Nama User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="new-user-name" class="form-label">Nama Baru:</label>
+                <input type="text" id="new-user-name" class="form-control" placeholder="Masukkan nama baru">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveNewUserName()">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+    const usedAssets = new Set();
+    const usedIncomes = new Set();
+    const usedExpenses = new Set();
+    let totalAset = 0, totalIncome = 0, totalExpense = 0;
+
+    // Event listener untuk Saldo Sebelumnya
+    document.getElementById('saldo-sebelumnya').addEventListener('input', updateTotalBalance);
+
+    // Fungsi untuk menampilkan input "Custom"
+    function toggleCustomInput(selectId, inputId) {
+        const select = document.getElementById(selectId);
+        const input = document.getElementById(inputId);
+        input.classList.toggle('d-none', select.value !== 'Custom');
+    }
+
+    // Format angka ke Rupiah
+    function formatRupiah(input) {
+        const angka = input.value.replace(/[^0-9]/g, '');
+        input.value = angka ? `Rp. ${parseInt(angka).toLocaleString('id-ID')}` : '';
+    }
+
+    // Tambah Aset
+    function addAsset() {
+        addItem('asset-type', 'asset-name', 'asset-value', 'asset-list', usedAssets, 'total-asset', 'totalAset');
+
+    }
+
+    // Tambah Arus Kas Masuk
+    function addIncome() {
+        addItem('income-type', 'income-name', 'income-value', 'income-list', usedIncomes, 'total-income', 'totalIncome');
+    }
+
+    // Tambah Arus Kas Keluar
+    function addExpense() {
+        addItem('expense-type', 'expense-name', 'expense-value', 'expense-list', usedExpenses, 'total-expense', 'totalExpense');
+    }
+
+ // Fungsi Tambah Item
+ function addItem(nameId, valueId, listId, usedSet, totalId, totalType, dateId, descriptionId) {
+    const nameInput = document.getElementById(nameId);
+    const name = nameInput.value.trim();
+    const valueInput = document.getElementById(valueId);
+    const value = parseFloat(valueInput.value.replace(/[^0-9]/g, '')) || 0;
+    const date = document.getElementById(dateId).value || new Date().toISOString().split('T')[0];
+    const description = document.getElementById(descriptionId).value.trim();
+
+    // Validasi input kosong atau nilai tidak valid
+    if (!name || value <= 0) {
+        showNotification('Data tidak valid! Nama, nilai, dan deskripsi harus diisi.', 'danger');
+        return;
+    }
+
+    // Validasi untuk mencegah input duplikat
+    if (usedSet.has(name)) {
+        showNotification(`Nama "${name}" sudah ada. Tidak boleh duplikat!`, 'danger');
+        return;
+    }
+
+    // Tambahkan item ke tabel
+    const list = document.getElementById(listId);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${date}</td>
+        <td>${name}</td>
+        <td>${description || '-'}</td>
+        <td>Rp. ${value.toLocaleString('id-ID')}</td>
+        <td>
+            <button class="btn btn-warning btn-sm" onclick="editItem(this)">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="removeItem(this, ${value}, '${totalId}', '${totalType}', '${name}')">Hapus</button>
+        </td>
+    `;
+    list.appendChild(row);
+
+    // Tambahkan ke Set untuk mencegah duplikat
+    usedSet.add(name);
+
+    // Update total berdasarkan tipe
+    if (totalType === 'totalIncome') {
+        totalIncome += value;
+        document.getElementById(totalId).textContent = `Total Arus Kas Masuk: Rp. ${totalIncome.toLocaleString('id-ID')}`;
+    } else if (totalType === 'totalExpense') {
+        totalExpense += value;
+        document.getElementById(totalId).textContent = `Total Arus Kas Keluar: Rp. ${totalExpense.toLocaleString('id-ID')}`;
+    } else {
+        totalAset += value;
+        document.getElementById(totalId).textContent = `Total Aset: Rp. ${totalAset.toLocaleString('id-ID')}`;
+    }
+
+    // Perbarui saldo akhir
+    updateTotalBalance();
+
+    // Reset input
+    nameInput.value = '';
+    valueInput.value = '';
+    document.getElementById(descriptionId).value = '';
+
+    // Panggil fungsi pagination
+    if (listId === 'asset-list') paginateTable('asset-list', 'pagination-asset', 5);
+    else if (listId === 'income-list') paginateTable('income-list', 'pagination-income', 5);
+    else if (listId === 'expense-list') paginateTable('expense-list', 'pagination-expense', 5);
+}
+
+function editItem(button) {
+    const row = button.parentElement.parentElement;
+    const dateCell = row.getElementsByTagName('td')[0];
+    const nameCell = row.getElementsByTagName('td')[1];
+    const descriptionCell = row.getElementsByTagName('td')[2];
+    const valueCell = row.getElementsByTagName('td')[3];
+
+    // Ambil data dari baris tabel
+    const date = dateCell.textContent;
+    const name = nameCell.textContent;
+    const description = descriptionCell.textContent;
+    const value = valueCell.textContent.replace(/[^0-9]/g, '');
+
+    // Isi data ke modal
+    document.getElementById('edit-date').value = date;
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-description').value = description;
+    document.getElementById('edit-value').value = value;
+
+    // Simpan referensi baris yang sedang diedit
+    document.getElementById('save-edit').onclick = function () {
+        saveEdit(row);
+    };
+
+    // Tampilkan modal
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    editModal.show();
+}
+
+function saveEdit(row) {
+    const dateCell = row.getElementsByTagName('td')[0];
+    const nameCell = row.getElementsByTagName('td')[1];
+    const descriptionCell = row.getElementsByTagName('td')[2];
+    const valueCell = row.getElementsByTagName('td')[3];
+
+    // Ambil nilai lama
+    const oldValue = parseFloat(valueCell.textContent.replace(/[^0-9]/g, '')) || 0;
+
+    // Ambil data dari modal
+    const newDate = document.getElementById('edit-date').value;
+    const newName = document.getElementById('edit-name').value;
+    const newDescription = document.getElementById('edit-description').value;
+    const newValue = parseFloat(document.getElementById('edit-value').value.replace(/[^0-9]/g, '')) || 0;
+
+    // Validasi
+    if (!newName || newValue <= 0) {
+        showNotification('Data tidak valid! Nama dan nominal harus diisi.', 'danger');
+        return;
+    }
+
+    // Update data di tabel
+    dateCell.textContent = newDate;
+    nameCell.textContent = newName;
+    descriptionCell.textContent = newDescription;
+    valueCell.textContent = `Rp. ${newValue.toLocaleString('id-ID')}`;
+
+    // Perbarui total berdasarkan tipe
+    const parentTable = row.closest('tbody').id;
+    if (parentTable === 'income-list') {
+        totalIncome = totalIncome - oldValue + newValue;
+        document.getElementById('total-income').textContent = `Total Arus Kas Masuk: Rp. ${totalIncome.toLocaleString('id-ID')}`;
+    } else if (parentTable === 'expense-list') {
+        totalExpense = totalExpense - oldValue + newValue;
+        document.getElementById('total-expense').textContent = `Total Arus Kas Keluar: Rp. ${totalExpense.toLocaleString('id-ID')}`;
+    } else if (parentTable === 'asset-list') {
+        totalAset = totalAset - oldValue + newValue;
+        document.getElementById('total-asset').textContent = `Total Aset: Rp. ${totalAset.toLocaleString('id-ID')}`;
+    }
+
+    // Perbarui saldo akhir
+    updateTotalBalance();
+
+    // Tutup modal
+    const editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+    editModal.hide();
+
+    showNotification('Data berhasil diperbarui!', 'success');
+}
+
+
+
+
+
+
+
+    // Tambahkan item ke daftar
+    const list = document.getElementById(listId);
+    const listItem = document.createElement('li');
+    listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+    listItem.innerHTML = `
+        <div>
+            <strong>${name}</strong> <br>
+            <small>${description || '-'}</small> <!-- Deskripsi ditampilkan di sini -->
+        </div>
+        <div>
+            <span>Rp. ${value.toLocaleString('id-ID')}</span>
+            <button class="btn btn-warning btn-sm" onclick="editItem(this)">Edit</button>
+            <button class="btn btn-danger btn-sm ms-3" onclick="removeItem(this, ${value}, '${totalId}', '${totalType}', '${name}')">-</button>
+        </div>
+    `;
+    list.appendChild(listItem);
+
+    // Update total
+    if (totalType === 'totalExpense') {
+        totalExpense += value;
+        document.getElementById(totalId).textContent = `Total Arus Kas Keluar: Rp. ${totalExpense.toLocaleString('id-ID')}`;
+    } else if (totalType === 'totalIncome') {
+        totalIncome += value;
+        document.getElementById(totalId).textContent = `Total Arus Kas Masuk: Rp. ${totalIncome.toLocaleString('id-ID')}`;
+    } else {
+        totalAset += value;
+        document.getElementById(totalId).textContent = `Total Aset: Rp. ${totalAset.toLocaleString('id-ID')}`;
+    }
+
+    updateTotalBalance();
+    showNotification('Data berhasil ditambahkan!', 'success');
+
+    document.getElementById(valueId).value = '';
+document.getElementById(descriptionId).value = '';
+if (type === 'Custom') document.getElementById(nameId).value = '';
+
+
+
+
+
+// Fungsi Hapus Item
+function removeItem(button, value, totalId, totalType, name) {
+    const confirmation = confirm("Apakah Anda yakin ingin menghapus data ini?");
+    if (!confirmation) return;
+
+    const listItem = button.parentElement.parentElement;
+    listItem.remove();
+
+    value = parseFloat(value);
+    if (totalType === 'totalExpense') {
+        totalExpense -= value;
+        usedExpenses.delete(name);
+        document.getElementById(totalId).textContent = `Total Arus Kas Keluar: Rp. ${totalExpense.toLocaleString('id-ID')}`;
+    } else if (totalType === 'totalIncome') {
+        totalIncome -= value;
+        usedIncomes.delete(name);
+        document.getElementById(totalId).textContent = `Total Arus Kas Masuk: Rp. ${totalIncome.toLocaleString('id-ID')}`;
+    } else {
+        totalAset -= value;
+        usedAssets.delete(name);
+        document.getElementById(totalId).textContent = `Total Aset: Rp. ${totalAset.toLocaleString('id-ID')}`;
+    }
+
+    updateTotalBalance();
+    showNotification('Data berhasil dihapus!', 'warning');
+}
+
+// Fungsi Update Saldo Akhir
+function updateTotalBalance() {
+    const saldoSebelumnya = parseFloat(document.getElementById('saldo-sebelumnya').value.replace(/[^0-9]/g, '')) || 0;
+    const totalBalance = saldoSebelumnya + totalAset + totalIncome - totalExpense;
+
+    // Update rincian di tabel
+    document.getElementById('rincian-saldo-sebelumnya').textContent = `Rp. ${saldoSebelumnya.toLocaleString('id-ID')}`;
+    document.getElementById('rincian-total-aset').textContent = `Rp. ${totalAset.toLocaleString('id-ID')}`;
+    document.getElementById('rincian-total-income').textContent = `Rp. ${totalIncome.toLocaleString('id-ID')}`;
+    document.getElementById('rincian-total-expense').textContent = `Rp. ${totalExpense.toLocaleString('id-ID')}`;
+    document.getElementById('rincian-saldo-akhir').textContent = `Rp. ${totalBalance.toLocaleString('id-ID')}`;
+}
+
+
+// Fungsi Notifikasi
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed top-0 end-0 m-3 shadow`;
+    notification.style.zIndex = 9999;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Reset Data
+function resetData() {
+    // Konfirmasi sebelum reset
+    if (!confirm('Apakah Anda yakin ingin mereset semua data?')) return;
+
+    // Kosongkan semua list HTML
+    document.getElementById('asset-list').innerHTML = '';
+    document.getElementById('income-list').innerHTML = '';
+    document.getElementById('expense-list').innerHTML = '';
+
+    // Hapus semua data dari Sets
+    usedAssets.clear();
+    usedIncomes.clear();
+    usedExpenses.clear();
+
+    // Reset total ke 0
+    totalAset = 0;
+    totalIncome = 0;
+    totalExpense = 0;
+
+    // Reset tampilan total
+    document.getElementById('total-asset').textContent = 'Total Aset: Rp. 0';
+    document.getElementById('total-income').textContent = 'Total Arus Kas Masuk: Rp. 0';
+    document.getElementById('total-expense').textContent = 'Total Arus Kas Keluar: Rp. 0';
+    document.getElementById('rincian-saldo-sebelumnya').textContent = 'Rp. 0';
+    document.getElementById('rincian-total-aset').textContent = 'Rp. 0';
+    document.getElementById('rincian-total-income').textContent = 'Rp. 0';
+    document.getElementById('rincian-total-expense').textContent = 'Rp. 0';
+    document.getElementById('rincian-saldo-akhir').textContent = 'Rp. 0';
+
+    // Reset saldo sebelumnya di input
+    document.getElementById('saldo-sebelumnya').value = ''; // Kosongkan input saldo sebelumnya
+    updateTotalBalance(); // Pastikan saldo akhir diperbarui menjadi 0
+
+    // Hapus navigasi pagination
+    document.getElementById('pagination-asset').innerHTML = '';
+    document.getElementById('pagination-income').innerHTML = '';
+    document.getElementById('pagination-expense').innerHTML = '';
+
+    // Tampilkan notifikasi
+    showNotification('Semua data berhasil direset!', 'success');
+}
+
+
+function setDefaultDate() {
+    const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+    // Set default tanggal di input
+    document.getElementById('asset-date').value = today;
+    document.getElementById('income-date').value = today;
+    document.getElementById('expense-date').value = today;
+}
+
+// Panggil fungsi saat modal dibuka
+document.addEventListener('DOMContentLoaded', () => {
+    const modals = ['addAssetModal', 'addIncomeModal', 'addExpenseModal'];
+    modals.forEach(modalId => {
+        const modalElement = document.getElementById(modalId);
+        modalElement.addEventListener('show.bs.modal', setDefaultDate);
+    });
+});
+
+
+
+
+function filterTableByDate(tableId, selectedDate) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        const dateCell = rows[i].getElementsByTagName('td')[0]; // Kolom tanggal di tabel
+        if (dateCell) {
+            const rowDate = dateCell.textContent.trim();
+            if (selectedDate === '' || rowDate === selectedDate) {
+                rows[i].style.display = ''; // Tampilkan baris
+            } else {
+                rows[i].style.display = 'none'; // Sembunyikan baris
+            }
+        }
+    }
+}
+
+
+function paginateTable(tableId, paginationId, rowsPerPage) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    const totalRows = rows.length;
+    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const pagination = document.getElementById(paginationId);
+
+    let currentPage = 1;
+
+    function showPage(page) {
+        for (let i = 0; i < totalRows; i++) {
+            rows[i].style.display = (i >= (page - 1) * rowsPerPage && i < page * rowsPerPage) ? '' : 'none';
+        }
+    }
+
+    function renderPagination() {
+        pagination.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = 'btn btn-primary btn-sm mx-1';
+            btn.onclick = () => {
+                currentPage = i;
+                showPage(currentPage);
+            };
+            pagination.appendChild(btn);
+        }
+    }
+
+    if (totalRows > rowsPerPage) {
+        showPage(currentPage);
+        renderPagination();
+    }
+}
+
+
+// Fungsi untuk Membuka Modal Ganti Nama
+function openProfileModal() {
+    const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+    modal.show();
+}
+
+// Fungsi untuk Menyimpan Nama Baru ke localStorage
+function saveNewUserName() {
+    const newUserName = document.getElementById('new-user-name').value.trim();
+    if (newUserName) {
+        // Simpan nama baru ke localStorage
+        localStorage.setItem('userName', newUserName);
+        // Update tampilan nama user
+        document.getElementById('user-name').textContent = newUserName;
+
+        // Tutup modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('profileModal'));
+        modal.hide();
+    } else {
+        alert("Nama tidak boleh kosong!");
+    }
+}
+
+// Menampilkan Nama User Saat Halaman Dimuat
+document.addEventListener('DOMContentLoaded', function () {
+    const userNameSpan = document.getElementById('user-name');
+    const userName = localStorage.getItem('userName');
+
+    userNameSpan.textContent = userName ? userName : "Guest";
+});
+
+
+
+
+
+
+
+</script>
+
+<script>
+    // ... kode Anda sebelumnya
+
+    // Fungsi untuk Menampilkan Nama User dari localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+        const userNameSpan = document.getElementById('user-name'); // Elemen target
+        const userName = localStorage.getItem('userName'); // Ambil nama user dari localStorage
+
+        if (userName) {
+            userNameSpan.textContent = userName; // Tampilkan nama user jika ada
+        } else {
+            userNameSpan.textContent = "Guest"; // Fallback jika tidak ada data di localStorage
+        }
+    });
+</script>
+
+
+</body>
+</html>

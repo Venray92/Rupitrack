@@ -1,0 +1,141 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+    background-color: #f4f4f9;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+div {
+    margin: 10px;
+}
+
+input {
+    padding: 5px;
+    margin-left: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#hasil {
+    color: green;
+    font-weight: bold;
+}
+
+.btn-danger {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.alert {
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    opacity: 0.95;
+    transition: all 0.5s ease-in-out;
+}
+/* Tambahkan margin di bawah konten utama */
+.container {
+    margin-bottom: 150px;
+}
+/* Saldo Akhir - Sticky di bagian bawah */
+.saldo-akhir-container {
+    position: sticky;
+    bottom: 0; /* Menempel di bagian bawah */
+    width: 100%; /* Lebar penuh */
+    background-color: #28a745; /* Warna hijau */
+    color: white; /* Warna teks putih */
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1); /* Bayangan atas */
+    z-index: 1000; /* Tetap di atas elemen lain */
+}
+
+/* Konten utama - tambahkan margin bawah */
+.container {
+    margin-bottom: 150px; /* Jarak aman agar tidak tertutup */
+}
+
+/* Kartu Saldo Akhir */
+.saldo-akhir table {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+}
+
+.saldo-akhir th {
+    background-color: #f8f9fa;
+    text-align: left;
+    padding: 10px;
+}
+
+.saldo-akhir td {
+    text-align: right;
+    padding: 10px;
+}
+
+/* Tombol Reset Data - di bawah Saldo Akhir */
+.reset-data {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 50%;
+    text-align: center;
+}
+
+.reset-data button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.reset-data button:hover {
+    background-color: #bd2130;
+}
+
+/* Body dan HTML - Tambahkan scroll vertikal */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto; /* Aktifkan scroll vertikal */
+    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
+}
+
+/* Percantik Saldo Sebelumnya dengan Background */
+.saldo-sebelumnya span {
+    background-color: #FFB6C1; /* Warna background Light Pink */
+    color: #333; /* Warna teks agar kontras */
+    font-weight: bold; /* Membuat teks lebih tebal */
+    font-size: 1.2rem; /* Ukuran teks */
+    padding: 5px 10px; /* Ruang dalam (atas/bawah dan kiri/kanan) */
+    border-radius: 8px; /* Membuat sudut membulat */
+    display: inline-block; /* Agar padding dan background sesuai teks */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Efek bayangan lembut */
+}
+
+.btn.active {
+    background-color: #0d6efd !important;
+    color: white;
+    border-color: #0b5ed7;
+}
